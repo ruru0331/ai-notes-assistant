@@ -6,90 +6,158 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      max-width: 900px;
+      max-width: 960px;
       margin: 40px auto;
       padding: 20px;
-      background: #f5f7fb;
-      color: #222;
+      background: #f4f7fb;
+      color: #1f2937;
+    }
+
+    header {
+      margin-bottom: 28px;
     }
 
     h1 {
-      color: #1f2937;
+      margin-bottom: 8px;
+      font-size: 36px;
+    }
+
+    .subtitle {
+      color: #64748b;
+      font-size: 17px;
+      line-height: 1.6;
+    }
+
+    .panel {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 24px;
+      margin-bottom: 20px;
     }
 
     textarea {
       width: 100%;
-      height: 180px;
-      padding: 12px;
+      height: 200px;
+      padding: 14px;
       font-size: 16px;
       border: 1px solid #cbd5e1;
       border-radius: 8px;
       box-sizing: border-box;
+      resize: vertical;
+    }
+
+    .buttons {
+      margin-top: 16px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
     }
 
     button {
-      margin-top: 16px;
-      padding: 12px 20px;
-      font-size: 16px;
+      padding: 11px 18px;
+      font-size: 15px;
       border: none;
       border-radius: 8px;
-      background: #2563eb;
-      color: white;
       cursor: pointer;
     }
 
-    button:hover {
+    .primary {
+      background: #2563eb;
+      color: white;
+    }
+
+    .primary:hover {
       background: #1d4ed8;
     }
 
-    .result {
-      margin-top: 24px;
-      padding: 20px;
-      background: white;
-      border-radius: 8px;
-      border: 1px solid #e5e7eb;
+    .secondary {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    .secondary:hover {
+      background: #d1d5db;
+    }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
     }
 
     .section {
-      margin-bottom: 20px;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 18px;
     }
 
     h2 {
+      margin-top: 0;
       margin-bottom: 8px;
+      font-size: 20px;
       color: #111827;
+    }
+
+    p {
+      line-height: 1.6;
     }
 
     ul {
       padding-left: 20px;
+      line-height: 1.6;
+    }
+
+    .tag {
+      display: inline-block;
+      margin: 4px 6px 4px 0;
+      padding: 6px 10px;
+      background: #eff6ff;
+      color: #1d4ed8;
+      border-radius: 999px;
+      font-size: 14px;
     }
   </style>
 </head>
 <body>
-  <h1>AI Notes Assistant</h1>
-  <p>Paste your notes below. This assistant will organize them into a summary, keywords, and action items.</p>
+  <header>
+    <h1>AI Notes Assistant</h1>
+    <p class="subtitle">
+      Paste messy notes, meeting ideas, or study material. This assistant organizes them into a summary, keywords, and action items.
+    </p>
+  </header>
 
-  <textarea id="notes" placeholder="Paste your notes here..."></textarea>
-  <br>
-  <button onclick="analyzeNotes()">Analyze Notes</button>
+  <main>
+    <div class="panel">
+      <textarea id="notes" placeholder="Paste your notes here..."></textarea>
 
-  <div class="result">
-    <div class="section">
-      <h2>Summary</h2>
-      <p id="summary">Your summary will appear here.</p>
+      <div class="buttons">
+        <button class="primary" onclick="analyzeNotes()">Analyze Notes</button>
+        <button class="secondary" onclick="trySample()">Try sample</button>
+        <button class="secondary" onclick="clearNotes()">Clear</button>
+      </div>
     </div>
 
-    <div class="section">
-      <h2>Keywords</h2>
-      <p id="keywords">Keywords will appear here.</p>
-    </div>
+    <div class="result-grid">
+      <div class="section">
+        <h2>Summary</h2>
+        <p id="summary">Your summary will appear here.</p>
+      </div>
 
-    <div class="section">
-      <h2>Action Items</h2>
-      <ul id="actions">
-        <li>Action items will appear here.</li>
-      </ul>
+      <div class="section">
+        <h2>Keywords</h2>
+        <p id="keywords">Keywords will appear here.</p>
+      </div>
+
+      <div class="section">
+        <h2>Action Items</h2>
+        <ul id="actions">
+          <li>Action items will appear here.</li>
+        </ul>
+      </div>
     </div>
-  </div>
+  </main>
 
   <script>
     function analyzeNotes() {
@@ -113,12 +181,12 @@
         .filter(word => word.length > 4);
 
       const uniqueWords = [...new Set(words)];
-      const topKeywords = uniqueWords.slice(0, 5);
+      const topKeywords = uniqueWords.slice(0, 6);
 
       summary.textContent = "Main idea: " + sentences[0].trim();
 
-      keywords.textContent = topKeywords.length > 0
-        ? topKeywords.join(", ")
+      keywords.innerHTML = topKeywords.length > 0
+        ? topKeywords.map(word => `<span class="tag">${word}</span>`).join("")
         : "No clear keywords found.";
 
       actions.innerHTML = "";
@@ -137,6 +205,19 @@
           actions.appendChild(li);
         });
       }
+    }
+
+    function trySample() {
+      const sampleText = "We need to prepare the product demo next week. The team should collect user feedback and organize the notes. Our main goal is to improve onboarding and make the assistant easier to use.";
+      document.getElementById("notes").value = sampleText;
+      analyzeNotes();
+    }
+
+    function clearNotes() {
+      document.getElementById("notes").value = "";
+      document.getElementById("summary").textContent = "Your summary will appear here.";
+      document.getElementById("keywords").textContent = "Keywords will appear here.";
+      document.getElementById("actions").innerHTML = "<li>Action items will appear here.</li>";
     }
   </script>
 </body>
